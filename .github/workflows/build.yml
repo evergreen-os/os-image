@@ -17,7 +17,7 @@
         },
         {
           "name": "Install build tooling",
-          "run": "sudo apt-get update && sudo apt-get install -y rpm-ostree lorax qemu-utils"
+          "run": "sudo apt-get update && sudo apt-get install -y qemu-utils xz-utils"
         },
         {
           "name": "Compose rpm-ostree image",
