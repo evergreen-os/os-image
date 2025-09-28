@@ -1,0 +1,37 @@
+{
+  "ref": "evergreenos/stable/x86_64",
+  "base_image": {
+    "name": "fedora-silverblue",
+    "version": "39"
+  },
+  "packages": {
+    "install": [
+      "evergreen-device-agent",
+      "evergreen-enrollment-greeter",
+      "usbguard",
+      "flatpak"
+    ],
+    "remove": [
+      "firefox",
+      "cheese"
+    ]
+  },
+  "systemd": {
+    "enable": [
+      "evergreen-device-agent.service"
+    ]
+  },
+  "update_channels": ["stable", "beta", "dev"],
+  "flatpak_remotes": [
+    {
+      "name": "flathub",
+      "url": "https://flathub.org/repo/flathub.flatpakrepo",
+      "collection_id": "org.flathub.Stable"
+    },
+    {
+      "name": "evergreen",
+      "url": "https://apps.evergreen-os.dev/flatpakrepo",
+      "collection_id": "dev.evergreen.Apps"
+    }
+  ]
+}

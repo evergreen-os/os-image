@@ -1,0 +1,28 @@
+{
+  "selinux": {
+    "mode": "enforcing"
+  },
+  "ssh": {
+    "enabled": false,
+    "justification": "Immutable OS; remote shell managed via backend tunnels"
+  },
+  "usbguard": {
+    "default_policy": "block",
+    "policy_path": "/etc/usbguard/rules.conf"
+  },
+  "firewall": {
+    "allowed_services": [
+      "mdns",
+      "evergreen-device-agent"
+    ],
+    "default_zone": "public"
+  },
+  "disk_encryption": {
+    "luks_version": 2,
+    "tpm_auto_unlock": true
+  },
+  "secure_boot": {
+    "status": "planned",
+    "notes": "Boot assets will be signed in v1.0"
+  }
+}
