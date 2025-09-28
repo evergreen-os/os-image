@@ -19,6 +19,7 @@ class FlatpakRemote:
     collection_id: str
     gpg_key: str | None = None
     enabled: bool = True
+    default_refs: Tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -27,11 +28,15 @@ class ComposeManifest:
 
     ref: str
     base_image: Mapping[str, str]
+    base_image_metadata: Mapping[str, str]
     packages_install: Tuple[str, ...]
     packages_remove: Tuple[str, ...]
+    overrides: Mapping[str, Tuple[str, ...]]
     systemd_enable: Tuple[str, ...]
+    systemd_mask: Tuple[str, ...]
     update_channels: Tuple[str, ...]
     flatpak_remotes: Tuple[FlatpakRemote, ...]
+    default_kargs: Tuple[str, ...]
 
     @classmethod
     def load(cls, path: Path | None = None) -> "ComposeManifest":
@@ -45,21 +50,43 @@ class ComposeManifest:
                 name=remote["name"],
                 url=remote["url"],
                 collection_id=remote["collection_id"],
+                gpg_key=remote.get("gpg_key"),
+                enabled=remote.get("enabled", True),
+                default_refs=tuple(remote.get("default_refs", ())),
             )
             for remote in data.get("flatpak_remotes", [])
         )
 
         packages = data.get("packages", {})
         systemd = data.get("systemd", {})
+        overrides = {
+            key: tuple(value)
+            for key, value in data.get("overrides", {}).items()
+        }
+
+        base_image = data["base_image"]
+        minimal_base_image = {
+            "name": base_image.get("name", ""),
+            "version": base_image.get("version", ""),
+        }
+        extra_base_image = {
+            key: value
+            for key, value in base_image.items()
+            if key not in minimal_base_image
+        }
 
         return cls(
             ref=data["ref"],
-            base_image=data["base_image"],
+            base_image=minimal_base_image,
+            base_image_metadata=extra_base_image,
             packages_install=tuple(packages.get("install", ())),
             packages_remove=tuple(packages.get("remove", ())),
+            overrides=overrides,
             systemd_enable=tuple(systemd.get("enable", ())),
+            systemd_mask=tuple(systemd.get("mask", ())),
             update_channels=tuple(data.get("update_channels", ())),
             flatpak_remotes=remotes,
+            default_kargs=tuple(data.get("default_kargs", ())),
         )
 
 
@@ -71,8 +98,11 @@ class SecurityPolicies:
     ssh_enabled: bool
     usbguard_default_policy: str
     firewall_allowed_services: Tuple[str, ...]
+    firewall_custom_rules: Tuple[str, ...]
     disk_encryption: Mapping[str, object]
     secure_boot_status: str
+    auditing_enabled: bool
+    auditing_profile: str | None
 
     @classmethod
     def load(cls, path: Path | None = None) -> "SecurityPolicies":
@@ -86,8 +116,11 @@ class SecurityPolicies:
             ssh_enabled=data["ssh"]["enabled"],
             usbguard_default_policy=data["usbguard"]["default_policy"],
             firewall_allowed_services=tuple(data["firewall"].get("allowed_services", ())),
+            firewall_custom_rules=tuple(data["firewall"].get("custom_rules", ())),
             disk_encryption=data["disk_encryption"],
             secure_boot_status=data["secure_boot"]["status"],
+            auditing_enabled=data.get("auditing", {}).get("enabled", False),
+            auditing_profile=data.get("auditing", {}).get("profile"),
         )
 
 

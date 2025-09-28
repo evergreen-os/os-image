@@ -1,0 +1,14 @@
+apiVersion: evergreenos/v1
+backend:
+  url: https://enroll.evergreen-os.dev
+  tenant: default
+updates:
+  channel: stable
+  auto_reboot: true
+telemetry:
+  enabled: true
+  endpoint: https://telemetry.evergreen-os.dev
+security:
+  attestation:
+    require_tpm: true
+    require_secure_boot: true

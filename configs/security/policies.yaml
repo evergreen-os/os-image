@@ -1,6 +1,8 @@
 {
   "selinux": {
-    "mode": "enforcing"
+    "mode": "enforcing",
+    "policy": "targeted",
+    "notes": "EvergreenOS extends Fedora's targeted policy with USBGuard allow rules"
   },
   "ssh": {
     "enabled": false,
@@ -8,21 +10,34 @@
   },
   "usbguard": {
     "default_policy": "block",
-    "policy_path": "/etc/usbguard/rules.conf"
+    "policy_path": "/etc/usbguard/rules.conf",
+    "allowlist_package": "evergreen-usbguard-policy"
   },
   "firewall": {
     "allowed_services": [
       "mdns",
-      "evergreen-device-agent"
+      "evergreen-device-agent",
+      "dhcpv6-client"
     ],
-    "default_zone": "public"
+    "default_zone": "public",
+    "custom_rules": [
+      "-A INPUT -p tcp --dport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT"
+    ]
   },
   "disk_encryption": {
     "luks_version": 2,
-    "tpm_auto_unlock": true
+    "tpm_auto_unlock": true,
+    "cipher": "aes-xts-plain64",
+    "min_entropy_bits": 256
   },
   "secure_boot": {
     "status": "planned",
-    "notes": "Boot assets will be signed in v1.0"
+    "notes": "Boot assets will be signed in v1.0",
+    "signing_authority": "Evergreen Release Engineering"
+  },
+  "auditing": {
+    "enabled": true,
+    "profile": "stig",
+    "log_rotation_days": 14
   }
 }

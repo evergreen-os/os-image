@@ -2,36 +2,73 @@
   "ref": "evergreenos/stable/x86_64",
   "base_image": {
     "name": "fedora-silverblue",
-    "version": "39"
+    "version": "39",
+    "repository": "https://dl.fedoraproject.org",
+    "architecture": "x86_64"
   },
   "packages": {
     "install": [
       "evergreen-device-agent",
       "evergreen-enrollment-greeter",
+      "evergreen-enrollment-config",
+      "evergreen-usbguard-policy",
+      "flatpak",
+      "iptables",
       "usbguard",
-      "flatpak"
+      "NetworkManager",
+      "jq",
+      "plymouth-theme-script",
+      "policycoreutils-python-utils"
     ],
     "remove": [
       "firefox",
-      "cheese"
+      "cheese",
+      "gnome-tour",
+      "gnome-classic-session"
+    ]
+  },
+  "overrides": {
+    "replace": [
+      "fedora-release = evergreenos-release",
+      "fedora-logos = evergreen-logos"
+    ],
+    "remove": [
+      "gnome-initial-setup"
     ]
   },
   "systemd": {
     "enable": [
-      "evergreen-device-agent.service"
+      "evergreen-device-agent.service",
+      "evergreen-enrollment-greeter.service",
+      "usbguard.service",
+      "firewalld.service"
+    ],
+    "mask": [
+      "sshd.service"
     ]
   },
+  "default_kargs": [
+    "rd.luks.options=tpm2-device=auto",
+    "rd.neednet=1"
+  ],
   "update_channels": ["stable", "beta", "dev"],
   "flatpak_remotes": [
     {
       "name": "flathub",
       "url": "https://flathub.org/repo/flathub.flatpakrepo",
-      "collection_id": "org.flathub.Stable"
+      "collection_id": "org.flathub.Stable",
+      "default_refs": [
+        "org.mozilla.Firefox/x86_64/stable"
+      ]
     },
     {
       "name": "evergreen",
       "url": "https://apps.evergreen-os.dev/flatpakrepo",
-      "collection_id": "dev.evergreen.Apps"
+      "collection_id": "dev.evergreen.Apps",
+      "default_refs": [
+        "dev.evergreen.Classroom/x86_64/stable",
+        "dev.evergreen.Catalog/x86_64/stable"
+      ]
     }
   ]
 }
