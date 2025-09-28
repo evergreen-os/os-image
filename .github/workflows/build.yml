@@ -25,7 +25,7 @@
         },
         {
           "name": "Generate installer ISO",
-          "run": "python build/scripts/create_iso.py --kickstart build/iso/evergreen.ks --output artifacts/iso"
+          "run": "python build/scripts/create_iso.py --kickstart build/iso/evergreen.ks --output artifacts/iso && python build/scripts/publish_ostree.py --source artifacts/ostree --destination artifacts/update-repo --version ${{ github.sha }} --gpg-key evergreen-ci"
         },
         {
           "name": "Package QEMU test image",

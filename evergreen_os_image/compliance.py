@@ -44,6 +44,7 @@ class PRDComplianceReport:
         services_dir = REPO_ROOT / "configs" / "services"
         device_agent_service = services_dir / "evergreen-device-agent.service"
         greeter_source = EnrollmentGreeterSource.load()
+        greeter_service = services_dir / "evergreen-enrollment-greeter.service"
         workflow = GitHubWorkflow.load_default()
 
         base_image_composition = RequirementStatus(
@@ -122,12 +123,13 @@ class PRDComplianceReport:
             device_agent_integration,
             RequirementStatus(
                 "enrollment_ui",
-                implemented=bool(greeter_source.repository_url),
+                implemented=(
+                    bool(greeter_source.repository_url) and greeter_service.exists()
+                ),
                 details=(
-                    "Enrollment greeter sourced from external repository at "
-                    f"{greeter_source.repository_url}."
-                    if greeter_source.repository_url
-                    else "No GTK greeter application or configuration is present."
+                    "Enrollment greeter service and external source metadata present."
+                    if greeter_service.exists()
+                    else "No GTK greeter systemd unit or metadata is present."
                 ),
             ),
             flatpak_remotes,

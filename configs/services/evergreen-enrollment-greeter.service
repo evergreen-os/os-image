@@ -1,0 +1,15 @@
+[Unit]
+Description=Evergreen Enrollment Greeter
+Documentation=https://docs.evergreen-os.dev/enrollment
+After=systemd-user-sessions.service
+Before=graphical.target evergreen-device-agent.service
+ConditionPathExists=!/var/lib/evergreen/enrollment.complete
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/evergreen-enrollment-greeter --output /var/lib/evergreen/enrollment.json
+ExecStartPost=/usr/lib/evergreen/write-agent-config.sh
+
+[Install]
+WantedBy=graphical.target

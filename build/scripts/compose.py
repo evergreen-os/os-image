@@ -35,14 +35,20 @@ def compose(manifest: Path, output: Path) -> Path:
 
 
 def _extract_packages(manifest_text: str) -> list[str]:
-    packages: list[str] = []
-    for line in manifest_text.splitlines():
-        stripped = line.strip()
-        if stripped.startswith("- "):
-            candidate = stripped[2:].strip()
-            if candidate and " " not in candidate:
-                packages.append(candidate)
-    return packages
+    try:
+        data = json.loads(manifest_text)
+    except json.JSONDecodeError:
+        packages: list[str] = []
+        for line in manifest_text.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("- "):
+                candidate = stripped[2:].strip()
+                if candidate and " " not in candidate:
+                    packages.append(candidate)
+        return packages
+
+    install = data.get("packages", {}).get("install", [])
+    return [str(pkg) for pkg in install]
 
 
 def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
