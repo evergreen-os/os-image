@@ -1,0 +1,13 @@
+[Unit]
+Description=Evergreen Device Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/evergreen-device-agent --config /etc/evergreen/device-agent.toml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

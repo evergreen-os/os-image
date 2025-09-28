@@ -1,0 +1,4 @@
+{
+  "repository": "https://github.com/evergreen-os/enrollment-greeter",
+  "description": "The GTK enrollment greeter is developed in a dedicated repository and imported during image composition."
+}
